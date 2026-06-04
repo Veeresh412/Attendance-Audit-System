@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Attendance Audit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981; /* Elegant emerald */
+            --primary-hover: #059669;
+            --bg-body: #0f172a; /* Very dark slate */
+            --bg-card: #1e293b; /* Slightly lighter dark slate for the card */
+            --text-main: #f8fafc; /* Crisp white */
+            --text-muted: #94a3b8; /* Muted grey */
+            --border: #334155; /* Subtle dark border */
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        body {
+            background-color: var(--bg-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Minimalist Dark Card Design */
+        .login-container {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 420px;
+            padding: 48px 40px;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+            /* Elegant green accent on top */
+            border-top: 4px solid var(--primary); 
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: var(--text-main);
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .input-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        /* Super clean, uppercase floating labels */
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        /* Minimalist underline inputs for dark mode */
+        .input-group input {
+            width: 100%;
+            padding: 8px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            font-size: 15px;
+            color: var(--text-main);
+            transition: border-color 0.2s ease;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-bottom-color: var(--primary);
+        }
+
+        .input-group input::placeholder {
+            color: #475569;
+            font-weight: 300;
+        }
+        
+        #password {
+            padding-right: 60px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 12px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        #messageBox {
+            margin-top: 24px;
+            font-size: 13px;
+            padding: 12px;
+            border-radius: 3px;
+            display: none;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="header">
+            <h1>Sign In</h1>
+            <p>Attendance Audit System</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrapper">
+                    <input type="email" id="email" name="email" required placeholder="admin@company.com">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                    <button type="button" class="toggle-password" id="togglePassword">SHOW</button>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
+        </form>
+
+        <div id="messageBox"></div>
+    </div>
+
+    <script>
+        // Toggle Password Visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePassword.textContent = 'HIDE';
+            } else {
+                passwordInput.type = 'password';
+                togglePassword.textContent = 'SHOW';
+            }
+        });
+
+        // Form Submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = passwordInput.value;
+            const submitBtn = document.getElementById('submitBtn');
+            const messageBox = document.getElementById('messageBox');
+            
+            submitBtn.textContent = 'Authenticating...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('http://localhost:8080/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+
+                if (response.ok) {
+                    messageBox.textContent = 'Login Successful!';
+                    messageBox.className = 'success';
+                    messageBox.style.display = 'block';
+                    
+                    submitBtn.textContent = 'Sign In';
+                    submitBtn.disabled = false;
+                } else {
+                    const errorText = await response.text();
+                    messageBox.textContent = 'Error: ' + (errorText || 'Invalid credentials.');
+                    messageBox.className = 'error';
+                    messageBox.style.display = 'block';
+                    submitBtn.textContent = 'Sign In';
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                messageBox.textContent = 'Error connecting to server. Is Spring Boot running?';
+                messageBox.className = 'error';
+                messageBox.style.display = 'block';
+                submitBtn.textContent = 'Sign In';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
