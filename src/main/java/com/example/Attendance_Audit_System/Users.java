@@ -19,9 +19,6 @@ public class Users
     @Column(name="user_id")
     private Long userId;
 
-    @NotBlank(message = "Username cannot be empty")
-    @Column(name="username",nullable=false,unique =true)
-    private String username;
 
     @NotBlank
     @Email(message = "Must be a valid email")
@@ -40,15 +37,6 @@ public class Users
     public void setUserId(Long userId)
     {
         this.userId=userId;
-    }
-
-    public String getUsername()
-    {
-        return username;
-    }
-    public void setUsername(String username)
-    {
-        this.username=username;
     }
 
     public String getEmail()
