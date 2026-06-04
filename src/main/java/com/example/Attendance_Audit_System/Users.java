@@ -19,16 +19,16 @@ public class Users
     @Column(name="user_id")
     private Long userId;
 
-    @NotBlank
+    @NotBlank(message = "Username cannot be empty")
     @Column(name="username",nullable=false,unique =true)
     private String username;
 
     @NotBlank
-    @Email
+    @Email(message = "Must be a valid email")
     @Column(name="email",nullable=false,unique=true)
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "password cannot be empty")
     @Column(nullable=false)
     private String password;
 
