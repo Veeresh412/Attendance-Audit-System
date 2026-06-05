@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Attendance Audit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981; 
+            --primary-hover: #059669;
+            --bg-body: #0f172a; 
+            --bg-card: #1e293b; 
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --border: #334155; 
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 32px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            padding: 0 32px 32px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .brand h2 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .nav-items {
+            list-style: none;
+            padding: 0 16px;
+            flex-grow: 1;
+        }
+
+        .nav-items li {
+            margin-bottom: 8px;
+        }
+
+        .nav-items a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-items a:hover, .nav-items a.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+        }
+
+        .logout-btn {
+            margin: 0 16px;
+            padding: 12px 16px;
+            background: transparent;
+            color: #ef4444; /* red 500 */
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 48px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card h3 {
+            color: var(--text-muted);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Temporary Empty State for main section */
+        .empty-state {
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 64px 32px;
+            text-align: center;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-hover);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <h2>Attendance<span>Audit</span></h2>
+        </div>
+        <ul class="nav-items">
+            <li><a href="#" class="active">Overview Dashboard</a></li>
+            <li><a href="#">Employees</a></li>
+            <li><a href="#">Upload Timesheets</a></li>
+            <li><a href="#">Audit Reports</a></li>
+        </ul>
+        <button class="logout-btn" onclick="logout()">Log Out</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div>
+                <h1>Welcome back, Admin</h1>
+                <p>Here's what is happening with your attendance audits today.</p>
+            </div>
+            <button class="primary-btn">Upload Excel File</button>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Employees</h3>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Audits</h3>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Discrepancies Found</h3>
+                <div class="value">0</div>
+            </div>
+        </div>
+
+        <div class="empty-state">
+            <h3>No data available yet</h3>
+            <p>You haven't uploaded any attendance excel sheets to the database yet.</p>
+        </div>
+    </main>
+
+    <script>
+        function logout() {
+            // In a real app, you would clear the session token here
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

@@ -236,12 +236,14 @@
                 });
 
                 if (response.ok) {
-                    messageBox.textContent = 'Login Successful!';
+                    messageBox.textContent = 'Login Successful! Redirecting...';
                     messageBox.className = 'success';
                     messageBox.style.display = 'block';
                     
-                    submitBtn.textContent = 'Sign In';
-                    submitBtn.disabled = false;
+                    // Redirect to the new dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500); // Small delay so they can see the success message
                 } else {
                     const errorText = await response.text();
                     messageBox.textContent = 'Error: ' + (errorText || 'Invalid credentials.');
