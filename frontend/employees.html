@@ -189,7 +189,6 @@
             margin-bottom: 24px;
         }
 
-        /* Initials instead of a picture */
         .initials-circle {
             width: 48px;
             height: 48px;
@@ -204,6 +203,7 @@
             letter-spacing: 1px;
             margin-right: 16px;
             flex-shrink: 0;
+            text-transform: uppercase;
         }
 
         .name-role h3 {
@@ -245,7 +245,7 @@
             color: #cbd5e1;
         }
 
-        /* Button in the header to match dashboard */
+        /* Buttons */
         .primary-btn {
             background: var(--primary);
             color: white;
@@ -260,6 +260,92 @@
 
         .primary-btn:hover {
             background: var(--primary-hover);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(15, 23, 42, 0.8); 
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            margin: 8% auto; 
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border-top: 4px solid var(--primary);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            color: var(--text-muted);
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .close-btn:hover {
+            color: var(--text-main);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
         }
     </style>
 </head>
@@ -286,7 +372,7 @@
                 <h1>Employee Directory</h1>
                 <p>Manage and view all registered personnel.</p>
             </div>
-            <button class="primary-btn">+ Add Employee</button>
+            <button class="primary-btn" onclick="openModal()">+ Add Employee</button>
         </header>
 
         <div class="search-container">
@@ -298,113 +384,169 @@
         </div>
 
         <div class="employee-grid" id="employeeGrid">
-            <!-- Dummy Data Cards -->
-            <div class="employee-card">
-                <div class="card-header">
-                    <div class="initials-circle">AS</div>
-                    <div class="name-role">
-                        <h3 class="emp-name">Alice Smith</h3>
-                        <p class="emp-role">Software Engineer</p>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="info-label">Email Address</span>
-                        <span class="info-value">alice.smith@company.com</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Phone Number</span>
-                        <span class="info-value">+91 98123 45670</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="employee-card">
-                <div class="card-header">
-                    <div class="initials-circle">JD</div>
-                    <div class="name-role">
-                        <h3 class="emp-name">John Doe</h3>
-                        <p class="emp-role">Product Manager</p>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="info-label">Email Address</span>
-                        <span class="info-value">john.doe@company.com</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Phone Number</span>
-                        <span class="info-value">+91 98987 65430</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="employee-card">
-                <div class="card-header">
-                    <div class="initials-circle">SJ</div>
-                    <div class="name-role">
-                        <h3 class="emp-name">Sarah Jenkins</h3>
-                        <p class="emp-role">HR Specialist</p>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="info-label">Email Address</span>
-                        <span class="info-value">sarah.j@company.com</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Phone Number</span>
-                        <span class="info-value">+91 98555 01920</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="employee-card">
-                <div class="card-header">
-                    <div class="initials-circle">MR</div>
-                    <div class="name-role">
-                        <h3 class="emp-name">Marcus Reed</h3>
-                        <p class="emp-role">DevOps Engineer</p>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="info-row">
-                        <span class="info-label">Email Address</span>
-                        <span class="info-value">m.reed@company.com</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Phone Number</span>
-                        <span class="info-value">+91 98234 87650</span>
-                    </div>
-                </div>
-            </div>
+            <!-- Cards will be injected here by Javascript -->
         </div>
     </main>
 
-    <script>
-        // Live Search Filtering Logic
-        const searchInput = document.getElementById('searchInput');
-        const employeeCards = document.querySelectorAll('.employee-card');
+    <!-- Add Employee Modal -->
+    <div id="addEmployeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Employee</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="addEmployeeForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <input type="text" id="role" placeholder="e.g. Software Engineer" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="john.doe@company.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <!-- Type is number since backend expects a Long -->
+                    <input type="number" id="number" placeholder="9812345670" required>
+                </div>
+                <button type="submit" class="primary-btn" style="width: 100%; margin-top: 16px;">Save Employee</button>
+            </form>
+        </div>
+    </div>
 
+    <script>
+        // --- 1. Fetching and Rendering ---
+        const employeeGrid = document.getElementById('employeeGrid');
+
+        async function fetchEmployees() {
+            try {
+                const response = await fetch('http://localhost:8080/api/employee');
+                const employees = await response.json();
+                renderEmployees(employees);
+            } catch (error) {
+                console.error("Failed to fetch employees:", error);
+                employeeGrid.innerHTML = '<p style="color:#ef4444">Error loading employees from server.</p>';
+            }
+        }
+
+        function renderEmployees(employees) {
+            employeeGrid.innerHTML = ''; // Clear existing cards
+            
+            if(employees.length === 0) {
+                employeeGrid.innerHTML = '<p style="color:var(--text-muted)">No employees found. Add your first one!</p>';
+                return;
+            }
+
+            employees.forEach(emp => {
+                const initials = (emp.firstName.charAt(0) + emp.lastName.charAt(0)).toUpperCase();
+                
+                const card = document.createElement('div');
+                card.className = 'employee-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="initials-circle">${initials}</div>
+                        <div class="name-role">
+                            <h3 class="emp-name">${emp.firstName} ${emp.lastName}</h3>
+                            <p class="emp-role">${emp.role}</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="info-label">Email Address</span>
+                            <span class="info-value">${emp.email}</span>
+                        </div>
+                        <div class="info-row" style="margin-top: 12px;">
+                            <span class="info-label">Phone Number</span>
+                            <span class="info-value">+91 ${emp.number}</span>
+                        </div>
+                    </div>
+                `;
+                employeeGrid.appendChild(card);
+            });
+        }
+
+        // --- 2. Live Search Filtering ---
+        const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('keyup', function(e) {
             const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.employee-card');
 
-            employeeCards.forEach(card => {
+            cards.forEach(card => {
                 const name = card.querySelector('.emp-name').textContent.toLowerCase();
                 const role = card.querySelector('.emp-role').textContent.toLowerCase();
                 
-                // If name or role contains the search term, show it. Otherwise, hide it.
                 if(name.includes(searchTerm) || role.includes(searchTerm)) {
-                    card.style.display = 'flex'; // Use flex to maintain card layout
+                    card.style.display = 'flex';
                 } else {
                     card.style.display = 'none';
                 }
             });
         });
 
+        // --- 3. Modal Logic ---
+        const modal = document.getElementById('addEmployeeModal');
+
+        function openModal() {
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            document.getElementById('addEmployeeForm').reset();
+        }
+
+        // --- 4. Submitting a New Employee ---
+        document.getElementById('addEmployeeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Collect data from form
+            const newEmployee = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                role: document.getElementById('role').value,
+                email: document.getElementById('email').value,
+                number: parseInt(document.getElementById('number').value)
+            };
+
+            try {
+                // Send to backend
+                const response = await fetch('http://localhost:8080/api/employee', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newEmployee)
+                });
+
+                if(response.ok) {
+                    closeModal();
+                    // Immediately re-fetch and render the updated list!
+                    fetchEmployees();
+                } else {
+                    alert("Failed to add employee. Make sure the email and phone are unique!");
+                }
+            } catch (error) {
+                console.error("Error saving employee:", error);
+                alert("Error connecting to server.");
+            }
+        });
+
         function logout() {
             window.location.href = 'login.html';
         }
+
+        // Run fetch on initial page load
+        fetchEmployees();
     </script>
 </body>
 </html>
