@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Attendance_Audit_System;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="employees")
@@ -26,7 +27,7 @@ public class Employees
     @Column(name="lastname",nullable=false)
     private String lastName;
 
-    @NotBlank
+    @NotNull
     @Column(nullable=false,unique=true)
     private Long number;
 
@@ -59,7 +60,7 @@ public class Employees
 
     public String getLastName()
     {
-        return firstName;
+        return lastName;
     }
     public void setLastName(String lastName)
     {
