@@ -31,15 +31,15 @@ public class EmployeeController
     // we doin ts later @GetMapping("/{id}") // getting data for one employee
 
     @PostMapping // adding new employee
-    public ResponseEntity<String> addEmployee(@Valid  @RequestBody Employees newEmp)
+    public ResponseEntity<?> addEmployee(@Valid  @RequestBody Employees newEmp)
     {
         if(repo.existsByEmail(newEmp.getEmail()))
         {
-            return ResponseEntity.badRequest().body("Email already in use");
+            return ResponseEntity.badRequest().body(java.util.Map.of("email", "Email already in use"));
         }
         else if(repo.existsByNumber(newEmp.getNumber()))
         {
-            return ResponseEntity.badRequest().body("Number already in use");
+            return ResponseEntity.badRequest().body(java.util.Map.of("number", "Number already in use"));
         }
 
         repo.save(newEmp);

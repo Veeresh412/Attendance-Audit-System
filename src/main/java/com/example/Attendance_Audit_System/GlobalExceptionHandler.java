@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,5 +28,30 @@ public class GlobalExceptionHandler {
 
         // Send a clean 400 Bad Request JSON response back to the frontend
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    // This tells Spring to route all Database Unique failures here
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDatabaseExceptions(DataIntegrityViolationException ex) {
+        
+        Map<String, String> error = new HashMap<>();
+        error.put("databaseError", "That email or phone number is already registered!");
+        
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    // Catch-All for any other crashes so it NEVER returns an HTML error page
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleAllExceptions(Exception ex) {
+        Map<String, String> error = new HashMap<>();
+        
+        // Check if the crash was caused by a duplicate database entry that slipped through
+        if (ex.getMessage() != null && ex.getMessage().contains("duplicate key value")) {
+            error.put("databaseError", "That email or phone number is already registered!");
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        error.put("serverCrash", "An unexpected error occurred: " + ex.getMessage());
+        return ResponseEntity.internalServerError().body(error);
     }
 }

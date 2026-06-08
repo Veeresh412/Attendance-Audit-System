@@ -34,7 +34,7 @@ public class Employees
 
     @NotBlank
     @Column(nullable=false)
-    @Email(message="Must be a valid email")
+    @Email(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message="Must be a valid internet email")
     private String email;
 
     @NotBlank

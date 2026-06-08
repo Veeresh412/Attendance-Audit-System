@@ -515,7 +515,7 @@
                 lastName: document.getElementById('lastName').value,
                 role: document.getElementById('role').value,
                 email: document.getElementById('email').value,
-                number: parseInt(document.getElementById('number').value)
+                number: document.getElementById('number').value
             };
 
             try {
@@ -533,7 +533,13 @@
                     // Immediately re-fetch and render the updated list!
                     fetchEmployees();
                 } else {
-                    alert("Failed to add employee. Make sure the email and phone are unique!");
+                    const errorJson = await response.json();
+                    let alertMessage = "Failed to add employee. Please fix these errors:\n\n";
+                    for (const [field, message] of Object.entries(errorJson)) {
+                        const cleanField = field.charAt(0).toUpperCase() + field.slice(1);
+                        alertMessage += `• ${cleanField}: ${message}\n`;
+                    }
+                    alert(alertMessage);
                 }
             } catch (error) {
                 console.error("Error saving employee:", error);
