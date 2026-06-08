@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="employees")
@@ -28,6 +29,7 @@ public class Employees
     private String lastName;
 
     @NotNull
+    @Size(min=10,max=10)
     @Column(nullable=false,unique=true)
     private Long number;
 
