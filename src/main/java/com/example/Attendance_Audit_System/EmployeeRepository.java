@@ -8,7 +8,7 @@ public interface EmployeeRepository extends JpaRepository<Employees, Long> {
     
     // Spring Boot is smart enough to generate the SQL for these automatically based on the method names!
     boolean existsByEmail(String email);
-    boolean existsByNumber(Long number);
+    boolean existsByNumber(String number);
     
     Employees findByEmail(String email);
 }

@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -28,10 +27,10 @@ public class Employees
     @Column(name="lastname",nullable=false)
     private String lastName;
 
-    @NotNull
-    @Size(min=10,max=10)
+    @NotBlank
+    @Size(min=10,max=10,message="Invalid Phone Number")
     @Column(nullable=false,unique=true)
-    private Long number;
+    private String number;
 
     @NotBlank
     @Column(nullable=false)
@@ -78,11 +77,11 @@ public class Employees
         this.email=email;
     }
 
-    public Long getNumber()
+    public String getNumber()
     {
         return number;
     }
-    public void setNumber(Long number)
+    public void setNumber(String number)
     {
         this.number=number;
     }
