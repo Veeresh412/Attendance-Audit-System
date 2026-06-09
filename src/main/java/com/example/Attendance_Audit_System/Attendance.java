@@ -35,6 +35,9 @@ public class Attendance
     @Column(name="clock_Out")
     private LocalTime clockOut;
 
+    @Column(name="is_late",nullable=false)
+    private boolean isLate;
+
     // setters and getters
 
     public Long getAId()
@@ -74,5 +77,13 @@ public class Attendance
     public LocalTime getClockOut()
     {
         return clockOut;
+    }
+    public void setIsLate(boolean isLate)
+    {
+        this.isLate=isLate;
+    }
+    public boolean getIsLate()
+    {
+        return isLate;
     }
 }
