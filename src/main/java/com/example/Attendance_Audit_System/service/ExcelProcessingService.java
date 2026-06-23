@@ -73,7 +73,7 @@ public class ExcelProcessingService {
 
                     // 3. Try to parse the Strings into strict Java Dates and Times
                     // (Assuming your Excel format is YYYY-MM-DD and HH:mm)
-                    LocalDate workday = LocalDate.parse(dateStr);
+                    LocalDate workday = parseFlexibleDate(dateStr);
                     LocalTime clockIn = parseFlexibleTime(clockInStr);
                     LocalTime clockOut = parseFlexibleTime(clockOutStr);
 
@@ -110,6 +110,31 @@ public class ExcelProcessingService {
         }
     }
 
+    // Helper method to try multiple date formats
+    private LocalDate parseFlexibleDate(String dateStr) throws Exception {
+        dateStr = dateStr.trim();
+
+        // Common Excel date formats
+        String[] patterns = {
+            "yyyy-MM-dd", // 2026-06-23 (Strict standard)
+            "M/d/yy",     // 6/23/26 (US short)
+            "M/d/yyyy",   // 6/23/2026
+            "dd-MM-yyyy", // 23-06-2026 (EU standard)
+            "d/M/yyyy",   // 23/6/2026
+            "MM/dd/yyyy"  // 06/23/2026
+        };
+
+        for (String pattern : patterns) {
+            try {
+                return LocalDate.parse(dateStr, java.time.format.DateTimeFormatter.ofPattern(pattern));
+            } catch (java.time.format.DateTimeParseException ignored) {
+                // Silently ignore and try the next pattern
+            }
+        }
+        
+        throw new Exception("Unrecognized date format: " + dateStr);
+    }
+
     // Helper method to try multiple time formats
     private LocalTime parseFlexibleTime(String timeStr) throws Exception {
         // Clean up the string (removes invisible spaces and forces uppercase for AM/PM)
@@ -127,7 +152,7 @@ public class ExcelProcessingService {
 
         for (String pattern : patterns) {
             try {
-                return LocalTime.parse(timeStr, java.time.format.DateTimeFormatter.ofPattern(pattern));
+                return LocalTime.parse(timeStr, java.time.format.DateTimeFormatter.ofPattern(pattern, java.util.Locale.ENGLISH));
             } catch (java.time.format.DateTimeParseException ignored) {
                 // Silently ignore and try the next pattern
             }

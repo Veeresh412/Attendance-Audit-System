@@ -269,8 +269,8 @@
                     const statusText = record.isLate ? 'LATE STRIKE' : 'ON TIME';
 
                     tr.innerHTML = `
-                        <td>#${record.id}</td>
-                        <td>${record.employee ? record.employee.name : 'Unknown'}</td>
+                        <td>#${record.aId}</td>
+                        <td>${record.employee ? record.employee.firstName + ' ' + record.employee.lastName : 'Unknown'}</td>
                         <td>${record.workday}</td>
                         <td>${record.clockIn}</td>
                         <td>${record.clockOut}</td>
