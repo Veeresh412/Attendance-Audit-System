@@ -29,7 +29,7 @@ public class FaultyAttendance
     @Column(name="clock_out_input")
     private String clockOutInput;
 
-    // The most important column: Why did this row fail?
+    // The most important column
     @Column(name="error_message", length = 500)
     private String errorMessage;
 
