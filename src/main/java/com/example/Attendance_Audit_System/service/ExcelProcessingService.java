@@ -74,8 +74,8 @@ public class ExcelProcessingService {
                     // 3. Try to parse the Strings into strict Java Dates and Times
                     // (Assuming your Excel format is YYYY-MM-DD and HH:mm)
                     LocalDate workday = LocalDate.parse(dateStr);
-                    LocalTime clockIn = LocalTime.parse(clockInStr);
-                    LocalTime clockOut = LocalTime.parse(clockOutStr);
+                    LocalTime clockIn = parseFlexibleTime(clockInStr);
+                    LocalTime clockOut = parseFlexibleTime(clockOutStr);
 
                     // 4. Calculate the Late Strike (Cutoff is 09:30)
                     LocalTime lateCutoff = LocalTime.of(9, 30);
@@ -108,5 +108,31 @@ public class ExcelProcessingService {
         } catch (Exception e) {
             System.err.println("Failed to open the Excel file entirely. Error: " + e.getMessage());
         }
+    }
+
+    // Helper method to try multiple time formats
+    private LocalTime parseFlexibleTime(String timeStr) throws Exception {
+        // Clean up the string (removes invisible spaces and forces uppercase for AM/PM)
+        timeStr = timeStr.trim().toUpperCase(); 
+
+        // Our master list of accepted Excel time formats
+        String[] patterns = {
+            "HH:mm",      // e.g. 17:00 or 09:15 (Standard 24-hour)
+            "H:mm",       // e.g. 9:15 (No leading zero 24-hour)
+            "h:mm a",     // e.g. 9:15 AM (Standard 12-hour)
+            "hh:mm a",    // e.g. 09:15 AM (Leading zero 12-hour)
+            "HH:mm:ss",   // e.g. 17:00:00 (Includes seconds)
+            "h:mm:ss a"   // e.g. 9:15:00 AM (Includes seconds 12-hour)
+        };
+
+        for (String pattern : patterns) {
+            try {
+                return LocalTime.parse(timeStr, java.time.format.DateTimeFormatter.ofPattern(pattern));
+            } catch (java.time.format.DateTimeParseException ignored) {
+                // Silently ignore and try the next pattern
+            }
+        }
+        
+        throw new Exception("Unrecognized time format: " + timeStr);
     }
 }
