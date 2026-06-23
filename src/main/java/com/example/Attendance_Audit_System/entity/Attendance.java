@@ -1,4 +1,4 @@
-package com.example.Attendance_Audit_System;
+package com.example.Attendance_Audit_System.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

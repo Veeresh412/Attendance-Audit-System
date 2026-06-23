@@ -1,4 +1,4 @@
-package com.example.Attendance_Audit_System;
+package com.example.Attendance_Audit_System.exception;
 
 import java.util.HashMap;
 import java.util.Map;

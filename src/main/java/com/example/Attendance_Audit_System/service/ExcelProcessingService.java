@@ -1,11 +1,20 @@
-package com.example.Attendance_Audit_System;
+package com.example.Attendance_Audit_System.service;
+
+import com.example.Attendance_Audit_System.repository.AttendanceRepository;
+import com.example.Attendance_Audit_System.repository.EmployeeRepository;
+import com.example.Attendance_Audit_System.repository.FaultyAttendanceRepository;
+import com.example.Attendance_Audit_System.entity.Employees;
+import com.example.Attendance_Audit_System.entity.FaultyAttendance;
+import com.example.Attendance_Audit_System.entity.Attendance;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -22,7 +31,8 @@ public class ExcelProcessingService {
     @Autowired
     private FaultyAttendanceRepository faultyRepo;
 
-    public String processExcelFile(MultipartFile file) {
+    @Async
+    public void processExcelFile(byte[] fileBytes) {
         int successCount = 0;
         int faultyCount = 0;
 
@@ -30,7 +40,7 @@ public class ExcelProcessingService {
         DataFormatter formatter = new DataFormatter();
 
         // Open the uploaded Excel file
-        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+        try (Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(fileBytes))) {
             Sheet sheet = workbook.getSheetAt(0); // Grab the very first sheet
 
             // Loop through every single row in the sheet
@@ -91,10 +101,10 @@ public class ExcelProcessingService {
                     faultyCount++;
                 }
             }
-            return "Excel Processing Complete! Successful Rows: " + successCount + " | Faulty Rows: " + faultyCount;
+            System.out.println("Excel Processing Complete! Successful Rows: " + successCount + " | Faulty Rows: " + faultyCount);
 
         } catch (Exception e) {
-            return "Failed to open the Excel file entirely. Error: " + e.getMessage();
+            System.err.println("Failed to open the Excel file entirely. Error: " + e.getMessage());
         }
     }
 }

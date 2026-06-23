@@ -1,4 +1,4 @@
-package com.example.Attendance_Audit_System;
+package com.example.Attendance_Audit_System.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,7 @@
-package com.example.Attendance_Audit_System;
+package com.example.Attendance_Audit_System.controller;
+
+import com.example.Attendance_Audit_System.entity.Users;
+import com.example.Attendance_Audit_System.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

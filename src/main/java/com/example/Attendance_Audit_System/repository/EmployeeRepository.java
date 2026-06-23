@@ -1,4 +1,6 @@
-package com.example.Attendance_Audit_System;
+package com.example.Attendance_Audit_System.repository;
+
+import com.example.Attendance_Audit_System.entity.Employees;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
