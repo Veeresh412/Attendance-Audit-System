@@ -1,8 +1,5 @@
 package com.example.Attendance_Audit_System.controller;
 
-import com.example.Attendance_Audit_System.entity.Employees;
-import com.example.Attendance_Audit_System.repository.EmployeeRepository;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Attendance_Audit_System.entity.Employees;
+import com.example.Attendance_Audit_System.repository.EmployeeRepository;
 
 import jakarta.validation.Valid;
 
@@ -29,6 +29,12 @@ public class EmployeeController
     public List<Employees> viewEmployees()
     {
         return repo.findAll();
+    }
+
+    @GetMapping("/count")
+    public Long empcount()
+    {
+        return repo.count();
     }
 
     // we doin ts later @GetMapping("/{id}") // getting data for one employee

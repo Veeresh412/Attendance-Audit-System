@@ -228,7 +228,7 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Employees</h3>
-                <div class="value">0</div>
+                <div class="value" id="totalEmployeesCount">0</div>
             </div>
             <div class="stat-card">
                 <h3>Pending Audits</h3>
@@ -247,6 +247,20 @@
     </main>
 
     <script>
+        // Fetch the total employee count when the dashboard loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/employee/count');
+                if (response.ok) {
+                    const count = await response.json();
+                    // Update the HTML element with the number we got from Spring Boot!
+                    document.getElementById('totalEmployeesCount').innerText = count;
+                }
+            } catch (error) {
+                console.error("Error fetching employee count. Is the backend running?", error);
+            }
+        });
+
         function logout() {
             // In a real app, you would clear the session token here
             window.location.href = 'login.html';
