@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../image/crazy image.png">
+    <title>Attendance Audit - Valid Data</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981; 
+            --primary-hover: #059669;
+            --bg-body: #0f172a; 
+            --bg-card: #1e293b; 
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --border: #334155; 
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 32px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            padding: 0 32px 32px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .brand h2 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .nav-items {
+            list-style: none;
+            padding: 0 16px;
+            flex-grow: 1;
+        }
+
+        .nav-items li {
+            margin-bottom: 8px;
+        }
+
+        .nav-items a {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-items a:hover, .nav-items a.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+        }
+
+        .logout-btn {
+            margin: 0 16px;
+            padding: 12px 16px;
+            background: transparent;
+            color: var(--danger); 
+            border: 1px solid var(--danger-bg);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger-bg);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 48px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Data Table */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px 24px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: rgba(15, 23, 42, 0.4);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-ontime {
+            background-color: var(--success-bg);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-late {
+            background-color: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 48px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <a href="dashboard.html" style="text-decoration: none; color: inherit;">
+                <h2>Attendance<span>Audit</span></h2>
+            </a>
+        </div>
+        <ul class="nav-items">
+            <li><a href="dashboard.html">Overview Dashboard</a></li>
+            <li><a href="employees.html">Employees</a></li>
+            <li><a href="upload.html">Upload Timesheets</a></li>
+            <li><a href="#" class="active">Verified Attendance</a></li>
+            <li><a href="faulty.html">Faulty Audit Logs</a></li>
+        </ul>
+        <button class="logout-btn" onclick="logout()">Log Out</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div>
+                <h1>Verified Attendance Records</h1>
+                <p>Showing all successfully validated timesheet records. Policy enforces a 09:30 AM Late Cutoff.</p>
+            </div>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee Name</th>
+                        <th>Workday Date</th>
+                        <th>Clock In</th>
+                        <th>Clock Out</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTableBody">
+                    <tr><td colspan="6" class="loading-state">Fetching validated data from the server...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', fetchAttendance);
+
+        async function fetchAttendance() {
+            try {
+                // Fetch the List<Attendance> from our Spring Boot endpoint
+                const response = await fetch('http://localhost:8080/api/attendance/view');
+                if (!response.ok) throw new Error('Failed to fetch attendance data');
+
+                const attendanceRecords = await response.json();
+                const tableBody = document.getElementById('attendanceTableBody');
+                
+                tableBody.innerHTML = ''; // Clear loading message
+
+                if (attendanceRecords.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="loading-state">No attendance records found. Upload a timesheet first!</td></tr>';
+                    return;
+                }
+
+                // Loop through the data and build the table rows
+                attendanceRecords.forEach(record => {
+                    const tr = document.createElement('tr');
+                    
+                    // Determine if late and style the badge accordingly
+                    const statusClass = record.isLate ? 'badge-late' : 'badge-ontime';
+                    const statusText = record.isLate ? 'LATE STRIKE' : 'ON TIME';
+
+                    tr.innerHTML = `
+                        <td>#${record.id}</td>
+                        <td>${record.employee ? record.employee.name : 'Unknown'}</td>
+                        <td>${record.workday}</td>
+                        <td>${record.clockIn}</td>
+                        <td>${record.clockOut}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('attendanceTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="loading-state" style="color: #ef4444;">Failed to connect to the backend server. Is Spring Boot running?</td></tr>';
+            }
+        }
+
+        function logout() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
