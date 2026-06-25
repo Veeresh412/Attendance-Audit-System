@@ -33,13 +33,13 @@ public class AttendanceController {
     @GetMapping("/view")
     public List<Attendance> viewAttendance()
     {
-        return repo.findAll();
+        return repo.findAllOrderedByDate();
     }
 
-        @DeleteMapping
+    @DeleteMapping
     public void temp()
     {
-        repo.deleteAll();
+        repo.deleteAll(); 
     }
 
     @PostMapping("/upload")

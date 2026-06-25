@@ -222,22 +222,8 @@
             </div>
         </header>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Employee Name</th>
-                        <th>Workday Date</th>
-                        <th>Clock In</th>
-                        <th>Clock Out</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="attendanceTableBody">
-                    <tr><td colspan="6" class="loading-state">Fetching validated data from the server...</td></tr>
-                </tbody>
-            </table>
+        <div id="tablesWrapper">
+            <div class="loading-state">Fetching validated data from the server...</div>
         </div>
     </main>
 
@@ -251,38 +237,81 @@
                 if (!response.ok) throw new Error('Failed to fetch attendance data');
 
                 const attendanceRecords = await response.json();
-                const tableBody = document.getElementById('attendanceTableBody');
-                
-                tableBody.innerHTML = ''; // Clear loading message
+                const wrapper = document.getElementById('tablesWrapper');
+                wrapper.innerHTML = ''; // Clear loading message
 
                 if (attendanceRecords.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="6" class="loading-state">No attendance records found. Upload a timesheet first!</td></tr>';
+                    wrapper.innerHTML = '<div class="loading-state">No attendance records found. Upload a timesheet first!</div>';
                     return;
                 }
 
-                // Loop through the data and build the table rows
-                attendanceRecords.forEach(record => {
-                    const tr = document.createElement('tr');
-                    
-                    // Determine if late and style the badge accordingly
-                    const statusClass = record.isLate ? 'badge-late' : 'badge-ontime';
-                    const statusText = record.isLate ? 'LATE STRIKE' : 'ON TIME';
+                // 1. Group records by the workday date
+                const groupedData = attendanceRecords.reduce((groups, record) => {
+                    const date = record.workday;
+                    if (!groups[date]) {
+                        groups[date] = [];
+                    }
+                    groups[date].push(record);
+                    return groups;
+                }, {});
 
-                    tr.innerHTML = `
-                        <td>#${record.aId}</td>
-                        <td>${record.employee ? record.employee.firstName + ' ' + record.employee.lastName : 'Unknown'}</td>
-                        <td>${record.workday}</td>
-                        <td>${record.clockIn}</td>
-                        <td>${record.clockOut}</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                // 2. Loop through every unique date and build a fresh table for it
+                Object.keys(groupedData).forEach(date => {
+                    
+                    // Create the beautiful Date Header
+                    const dateHeader = document.createElement('h3');
+                    dateHeader.style.marginBottom = '16px';
+                    dateHeader.style.marginTop = '32px';
+                    dateHeader.style.color = 'var(--text-main)';
+                    dateHeader.innerHTML = `📅 ${date}`;
+                    wrapper.appendChild(dateHeader);
+
+                    // Create the Table Container
+                    const tableContainer = document.createElement('div');
+                    tableContainer.className = 'table-container';
+                    
+                    const table = document.createElement('table');
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employee Name</th>
+                                <th>Workday Date</th>
+                                <th>Clock In</th>
+                                <th>Clock Out</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
                     `;
-                    tableBody.appendChild(tr);
+                    const tbody = table.querySelector('tbody');
+
+                    // 3. Loop through the records FOR THIS SPECIFIC DATE and add rows
+                    groupedData[date].forEach(record => {
+                        const tr = document.createElement('tr');
+                        const statusClass = record.isLate ? 'badge-late' : 'badge-ontime';
+                        const statusText = record.isLate ? 'LATE STRIKE' : 'ON TIME';
+
+                        tr.innerHTML = `
+                            <td>#${record.aId}</td>
+                            <td>${record.employee ? record.employee.firstName + ' ' + record.employee.lastName : 'Unknown'}</td>
+                            <td>${record.workday}</td>
+                            <td>${record.clockIn}</td>
+                            <td>${record.clockOut}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+
+                    // Assemble the pieces
+                    tableContainer.appendChild(table);
+                    wrapper.appendChild(tableContainer);
                 });
 
             } catch (error) {
                 console.error("Error:", error);
-                document.getElementById('attendanceTableBody').innerHTML = 
-                    '<tr><td colspan="6" class="loading-state" style="color: #ef4444;">Failed to connect to the backend server. Is Spring Boot running?</td></tr>';
+                document.getElementById('tablesWrapper').innerHTML = 
+                    '<div class="loading-state" style="color: #ef4444;">Failed to connect to the backend server. Is Spring Boot running?</div>';
             }
         }
 

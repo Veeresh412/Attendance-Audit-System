@@ -1,8 +1,14 @@
 package com.example.Attendance_Audit_System.repository;
 
-import com.example.Attendance_Audit_System.entity.Attendance;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.example.Attendance_Audit_System.entity.Attendance;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
+
+    @Query("SELECT a FROM Attendance a ORDER BY a.workday ")
+    List<Attendance> findAllOrderedByDate();
 }
