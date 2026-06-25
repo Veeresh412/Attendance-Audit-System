@@ -194,6 +194,66 @@
             background: var(--primary-hover);
         }
 
+        /* Data Table */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 16px 24px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: rgba(15, 23, 42, 0.4);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-ontime {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-late {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .loading-state {
+            text-align: center;
+            padding: 48px;
+            color: var(--text-muted);
+        }
+
     </style>
 </head>
 <body>
@@ -232,35 +292,110 @@
                 <div class="value" id="totalEmployeesCount">0</div>
             </div>
             <div class="stat-card">
-                <h3>Pending Audits</h3>
-                <div class="value">0</div>
-            </div>
-            <div class="stat-card">
                 <h3>Discrepancies Found</h3>
                 <div class="value">0</div>
             </div>
         </div>
 
-        <div class="empty-state">
-            <h3>No data available yet</h3>
-            <p>You haven't uploaded any attendance excel sheets to the database yet.</p>
+        <div id="recentActivityWrapper">
+            <div class="empty-state">
+                <p class="loading-state">Fetching recent activity...</p>
+            </div>
         </div>
     </main>
 
     <script>
         // Fetch the total employee count when the dashboard loads
         document.addEventListener('DOMContentLoaded', async () => {
+            fetchEmployeeCount();
+            fetchRecentActivity();
+        });
+
+        async function fetchEmployeeCount() {
             try {
                 const response = await fetch('http://localhost:8080/api/employee/count');
                 if (response.ok) {
                     const count = await response.json();
-                    // Update the HTML element with the number we got from Spring Boot!
                     document.getElementById('totalEmployeesCount').innerText = count;
                 }
             } catch (error) {
-                console.error("Error fetching employee count. Is the backend running?", error);
+                console.error("Error fetching employee count:", error);
             }
-        });
+        }
+
+        async function fetchRecentActivity() {
+            const wrapper = document.getElementById('recentActivityWrapper');
+            try {
+                const response = await fetch('http://localhost:8080/api/attendance/view');
+                if (!response.ok) throw new Error('Failed to fetch attendance');
+                
+                const records = await response.json();
+                
+                if (records.length === 0) {
+                    wrapper.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No data available yet</h3>
+                            <p>You haven't uploaded any attendance excel sheets to the database yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Group by date to find the most recent
+                const groupedData = records.reduce((groups, record) => {
+                    const date = record.workday;
+                    if (!groups[date]) groups[date] = [];
+                    groups[date].push(record);
+                    return groups;
+                }, {});
+
+                // Sort dates descending and grab the absolute newest one
+                const sortedDates = Object.keys(groupedData).sort((a, b) => new Date(b) - new Date(a));
+                const mostRecentDate = sortedDates[0];
+                const recentRecords = groupedData[mostRecentDate];
+
+                // Build the UI
+                wrapper.innerHTML = `
+                    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                        <span style="color: var(--primary);"></span> Most Recent Activity (${mostRecentDate})
+                    </h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Emp ID</th>
+                                    <th>Name</th>
+                                    <th>Clock In</th>
+                                    <th>Clock Out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${recentRecords.map(record => {
+                                    const statusClass = record.isLate ? 'badge-late' : 'badge-ontime';
+                                    const statusText = record.isLate ? 'LATE STRIKE' : 'ON TIME';
+                                    const empName = record.employee ? record.employee.firstName + ' ' + record.employee.lastName : 'Unknown';
+                                    
+                                    return `
+                                        <tr>
+                                            <td>#${record.employee ? record.employee.empId : 'N/A'}</td>
+                                            <td style="font-weight: 500; color: white;">${empName}</td>
+                                            <td>${record.clockIn}</td>
+                                            <td>${record.clockOut}</td>
+                                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error("Error fetching recent activity:", error);
+                wrapper.innerHTML = '<div class="empty-state"><p style="color: #ef4444;">Failed to connect to the backend server.</p></div>';
+            }
+        }
 
         function logout() {
             // In a real app, you would clear the session token here
