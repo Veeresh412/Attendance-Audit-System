@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Attendance_Audit_System.entity.Attendance;
 import com.example.Attendance_Audit_System.repository.AttendanceRepository;
+import com.example.Attendance_Audit_System.repository.DefaulterView;
 import com.example.Attendance_Audit_System.service.ExcelProcessingService;
 
 @RestController
@@ -34,6 +35,12 @@ public class AttendanceController {
     public List<Attendance> viewAttendance()
     {
         return repo.findAllOrderedByDate();
+    }
+
+    @GetMapping("/defaulters")
+    public List<DefaulterView> viewdef()
+    {
+        return repo.findDefaulters();
     }
 
     @DeleteMapping
