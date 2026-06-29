@@ -293,7 +293,7 @@
             </div>
             <div class="stat-card">
                 <h3>Discrepancies Found</h3>
-                <div class="value">0</div>
+                <div class="value" id="discrepanciesCount">0</div>
             </div>
         </div>
 
@@ -305,9 +305,10 @@
     </main>
 
     <script>
-        // Fetch the total employee count when the dashboard loads
+        // Fetch the total counts when the dashboard loads
         document.addEventListener('DOMContentLoaded', async () => {
             fetchEmployeeCount();
+            fetchFaultyCount();
             fetchRecentActivity();
         });
 
@@ -320,6 +321,18 @@
                 }
             } catch (error) {
                 console.error("Error fetching employee count:", error);
+            }
+        }
+
+        async function fetchFaultyCount() {
+            try {
+                const response = await fetch('http://localhost:8080/api/faulty-attendance/count');
+                if (response.ok) {
+                    const count = await response.json();
+                    document.getElementById('discrepanciesCount').innerText = count;
+                }
+            } catch (error) {
+                console.error("Error fetching faulty count:", error);
             }
         }
 

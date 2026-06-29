@@ -24,6 +24,11 @@ public class FaultyAttendanceController {
     public List<FaultyAttendance> viewFaultyLogs() {
         return repo.findAll();
     }
+    @GetMapping("/count")
+    public Long viewcount()
+    {
+        return repo.count();
+    }
 
     @DeleteMapping
     public void temp()
