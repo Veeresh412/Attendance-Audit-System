@@ -20,4 +20,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
            nativeQuery = true)
     List<DefaulterView> findDefaulters();
 
+    List<Attendance> findByEmployee_EmpId(Long empId);
+
 }

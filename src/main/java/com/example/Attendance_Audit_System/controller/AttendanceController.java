@@ -3,18 +3,21 @@ package com.example.Attendance_Audit_System.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.Attendance_Audit_System.dto.AttendanceDTO;
 import com.example.Attendance_Audit_System.entity.Attendance;
 import com.example.Attendance_Audit_System.repository.AttendanceRepository;
 import com.example.Attendance_Audit_System.repository.DefaulterView;
@@ -35,6 +38,17 @@ public class AttendanceController {
     public List<Attendance> viewAttendance()
     {
         return repo.findAllOrderedByDate();
+    }
+
+    @GetMapping("/employee/{id}")
+    public List<AttendanceDTO> viewEmployeeAttendance(@PathVariable("id") Long empid)
+    {
+        List<Attendance> rawRecords = repo.findByEmployee_EmpId(empid);
+
+        return rawRecords.stream()
+            .map(a-> new AttendanceDTO(a.getAId(),empid, a.getWorkday(),a.getClockIn(),a.getClockOut(),a.getIsLate()))
+            .collect(Collectors.toList());
+
     }
 
     @GetMapping("/defaulters")
