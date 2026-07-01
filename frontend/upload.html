@@ -360,6 +360,87 @@
             }
         }
 
+        // --- INDEXEDDB OFFLINE STORAGE LOGIC ---
+        const DB_NAME = 'OfflineUploadsDB';
+        const STORE_NAME = 'timesheets';
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    }
+                };
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function saveOfflineFile(file) {
+            const db = await initDB();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.put({ id: 1, file: file, name: file.name });
+                request.onsuccess = resolve;
+                request.onerror = reject;
+            });
+        }
+
+        async function getOfflineFile() {
+            const db = await initDB();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(1);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = reject;
+            });
+        }
+
+        async function clearOfflineFile() {
+            const db = await initDB();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.delete(1);
+                request.onsuccess = resolve;
+                request.onerror = reject;
+            });
+        }
+
+        // --- PING LOOP (Checks every 5 seconds) ---
+        setInterval(async () => {
+            try {
+                const record = await getOfflineFile();
+                if (!record) return; // No queued files
+
+                // Check if server is awake
+                const response = await fetch('http://localhost:8080/api/attendance/view', { method: 'GET' });
+                
+                if (response.ok) {
+                    showStatus("Server connected! Uploading queued file...", true);
+                    
+                    const formData = new FormData();
+                    formData.append('file', record.file);
+
+                    const uploadRes = await fetch('http://localhost:8080/api/attendance/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (uploadRes.ok) {
+                        showStatus("Queued file uploaded successfully!", true);
+                        await clearOfflineFile();
+                    }
+                }
+            } catch (error) {
+                // Server still dead, silently ignore
+            }
+        }, 5000);
+
         // Handle Form Submission
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -368,7 +449,7 @@
 
             const file = fileInput.files[0];
             const formData = new FormData();
-            formData.append('file', file); // 'file' matches the @RequestParam("file") in Spring Boot
+            formData.append('file', file); 
 
             // UI Loading State
             uploadBtn.disabled = true;
@@ -376,7 +457,6 @@
             statusAlert.style.display = 'none';
 
             try {
-                // Send the file to our @Async Spring Boot endpoint
                 const response = await fetch('http://localhost:8080/api/attendance/upload', {
                     method: 'POST',
                     body: formData
@@ -385,19 +465,27 @@
                 const jsonResponse = await response.json();
 
                 if (response.ok) {
-                    // Success! This will happen instantly because of @Async
                     showStatus(jsonResponse.message, true);
-                    
-                    // Reset the form
                     fileInput.value = '';
                     fileNameDisplay.style.display = 'none';
                 } else {
-                    // Server returned a 400 Bad Request
                     showStatus(jsonResponse.error || "Upload failed. Check the server logs.", false);
                 }
             } catch (error) {
                 console.error("Upload error:", error);
-                showStatus("Network error: Could not connect to the backend server. Is it running?", false);
+                
+                // IF NETWORK ERROR -> SAVE OFFLINE!
+                await saveOfflineFile(file);
+                
+                statusAlert.textContent = "Server is offline! Your file has been safely queued locally and will upload automatically when the server wakes up.";
+                statusAlert.className = 'status-alert status-success'; 
+                statusAlert.style.display = 'block';
+                statusAlert.style.backgroundColor = 'rgba(245, 158, 11, 0.1)'; // Orange tint
+                statusAlert.style.color = '#f59e0b'; // Orange text
+                statusAlert.style.border = '1px solid rgba(245, 158, 11, 0.2)';
+
+                fileInput.value = '';
+                fileNameDisplay.style.display = 'none';
             } finally {
                 // Reset UI Button
                 uploadBtn.disabled = false;
