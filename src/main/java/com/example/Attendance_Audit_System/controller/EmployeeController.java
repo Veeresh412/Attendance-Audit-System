@@ -37,7 +37,7 @@ public class EmployeeController
         return repo.count();
     }
 
-    // we doin ts later @GetMapping("/{id}") // getting data for one employee
+
 
     @PostMapping // adding new employee
     public ResponseEntity<?> addEmployee(@Valid  @RequestBody Employees newEmp)
