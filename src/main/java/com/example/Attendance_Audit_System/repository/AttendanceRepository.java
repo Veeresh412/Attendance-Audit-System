@@ -22,4 +22,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     List<Attendance> findByEmployee_EmpId(Long empId);
 
+    // Used for Upsert: checking if an attendance record already exists for a specific day
+    java.util.Optional<Attendance> findByEmployeeAndWorkday(com.example.Attendance_Audit_System.entity.Employees employee, java.time.LocalDate workday);
+
 }

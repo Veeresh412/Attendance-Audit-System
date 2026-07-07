@@ -81,13 +81,25 @@ public class ExcelProcessingService {
                     LocalTime lateCutoff = LocalTime.of(9, 30);
                     boolean isLate = clockIn.isAfter(lateCutoff);
 
-                    // 5. Build and Save the PERFECT Attendance record
-                    Attendance attendance = new Attendance();
-                    attendance.setEmployee(employee);
-                    attendance.setWorkday(workday);
-                    attendance.setClockIn(clockIn);
-                    attendance.setClockOut(clockOut);
-                    attendance.setIsLate(isLate);
+                    // 5. Upsert (Update or Insert) the Attendance record
+                    Optional<Attendance> existingOpt = attendanceRepo.findByEmployeeAndWorkday(employee, workday);
+                    Attendance attendance;
+                    
+                    if (existingOpt.isPresent()) {
+                        // UPDATE: Overwrite times and status for the existing record
+                        attendance = existingOpt.get();
+                        attendance.setClockIn(clockIn);
+                        attendance.setClockOut(clockOut);
+                        attendance.setIsLate(isLate);
+                    } else {
+                        // INSERT: Create a brand new record
+                        attendance = new Attendance();
+                        attendance.setEmployee(employee);
+                        attendance.setWorkday(workday);
+                        attendance.setClockIn(clockIn);
+                        attendance.setClockOut(clockOut);
+                        attendance.setIsLate(isLate);
+                    }
 
                     attendanceRepo.save(attendance);
                     successCount++;
