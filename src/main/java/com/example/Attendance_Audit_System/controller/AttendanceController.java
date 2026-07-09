@@ -1,5 +1,6 @@
 package com.example.Attendance_Audit_System.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class AttendanceController {
             response.put("message", "File uploaded successfully! Processing started in the background.");
             return ResponseEntity.ok(response);
             
-        } catch (Exception e) {
+        } catch (IOException e) {
             response.put("error", "Failed to read the file: " + e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
