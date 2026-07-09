@@ -9,7 +9,7 @@ import com.example.Attendance_Audit_System.entity.Attendance;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
-    @Query("SELECT a FROM Attendance a ORDER BY a.workday ")
+    @Query("SELECT a FROM Attendance a ORDER BY a.workday DESC, a.employee.empId ASC")
     List<Attendance> findAllOrderedByDate();
 
     @Query(value = "SELECT a.emp_id AS employeeId, e.firstname AS firstName, e.lastname AS lastName, e.email AS email, e.role AS role, COUNT(a.emp_id) AS lateCount " +
