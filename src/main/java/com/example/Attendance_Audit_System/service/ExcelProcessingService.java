@@ -60,10 +60,10 @@ public class ExcelProcessingService {
                 if (empIdStr.isBlank() && dateStr.isBlank()) break;
 
                 // --- START OF VALIDATION ---
-                // We wrap this in a try-catch. If ANY validation fails, it instantly jumps to the catch block!
+                // We wrap this in a try-catch. If ANY validation fails, it instantly jumps to the catch block
                 try {
                     // 2. Try to find the Employee in the database
-                    Long empId = Long.parseLong(empIdStr);
+                    long empId = Long.parseLong(empIdStr);
                     Optional<Employees> employeeOpt = employeeRepo.findById(empId);
                     
                     if (employeeOpt.isEmpty()) {
@@ -131,7 +131,7 @@ public class ExcelProcessingService {
             "yyyy-MM-dd", // 2026-06-23 (Strict standard)
             "M/d/yy",     // 6/23/26 (US short)
             "M/d/yyyy",   // 6/23/2026
-            "dd-MM-yyyy", // 23-06-2026 (EU standard)
+            "dd-MM-yyyy", // 23-06-2026 (EU standard)a
             "d/M/yyyy",   // 23/6/2026
             "MM/dd/yyyy"  // 06/23/2026
         };
