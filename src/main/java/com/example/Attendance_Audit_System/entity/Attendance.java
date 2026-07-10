@@ -86,4 +86,16 @@ public class Attendance
     {
         return isLate;
     }
+
+    // Dynamic calculation: not stored in the DB, but sent to the frontend!
+    @jakarta.persistence.Transient
+    public String getWorkingHours() {
+        if (clockIn != null && clockOut != null) {
+            java.time.Duration duration = java.time.Duration.between(clockIn, clockOut);
+            long hours = duration.toHours();
+            long minutes = duration.toMinutesPart();
+            return String.format("%dh %02dm", hours, minutes);
+        }
+        return "N/A";
+    }
 }

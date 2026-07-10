@@ -438,6 +438,7 @@
                                 <th>Workday Date</th>
                                 <th>Clock In</th>
                                 <th>Clock Out</th>
+                                <th>Working Hours</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -457,6 +458,7 @@
                             <td>${record.workday}</td>
                             <td>${record.clockIn}</td>
                             <td>${record.clockOut}</td>
+                            <td style="font-weight: 500;">${record.workingHours}</td>
                             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                         `;
                         tbody.appendChild(tr);
